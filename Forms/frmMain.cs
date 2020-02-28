@@ -45,7 +45,6 @@ namespace youtube_dl_gui {
             else {
                 trayIcon.Icon = Properties.Resources.youtube_dl_gui;
                 tcMain.TabPages.RemoveAt(3);
-                tcMain.TabPages.RemoveAt(2);
                 lbDebug.Visible = false;
             }
         }
@@ -53,6 +52,12 @@ namespace youtube_dl_gui {
         private void frmMain_Load(object sender, EventArgs e) {
             UpdateChecker.CheckForUpdate();
             this.Icon = Properties.Resources.youtube_dl_gui;
+            if (Saved.Default.MainFormSize != default(System.Drawing.Size)) {
+                this.Size = Saved.Default.MainFormSize;
+            }
+            if (!Program.IsDebug) {
+                mDownloadSubtitles.Enabled = false;
+            }
 
 
             if (Saved.Default.formTrue0) {
@@ -112,6 +117,7 @@ namespace youtube_dl_gui {
             else {
                 Saved.Default.formTrue0 = false;
             }
+            Saved.Default.MainFormSize = this.Size;
 
             switch (General.Default.SaveCustomArgs) {
                 case 1: // txt
@@ -225,28 +231,36 @@ namespace youtube_dl_gui {
             cmTrayConvertAutomatic.Text = lang.cmTrayConvertAutomatic;
             cmTrayConvertAutoFFmpeg.Text = lang.cmTrayConvertAutoFFmpeg;
             cmTrayExit.Text = lang.cmTrayExit;
+
+            CalculateLocations();
         }
         void CalculateLocations() {
-            rbAudio.Location = new System.Drawing.Point(
-                (gbDownloadType.Size.Width - rbAudio.Size.Width) / 2,
-                rbAudio.Location.Y
+            gbDownloadType.Size = new Size(((rbVideo.Size.Width + 2) + rbAudio.Size.Width +  (rbCustom.Size.Width - 2)) + 12, gbDownloadType.Size.Height);
+            gbDownloadType.Location = new System.Drawing.Point(
+                (tabDownload.Size.Width - gbDownloadType.Size.Width) / 2,
+                gbDownloadType.Location.Y
                 );
+
             rbVideo.Location = new System.Drawing.Point(
-                (rbAudio.Location.X - rbVideo.Size.Width) - 2,
+                (gbDownloadType.Size.Width - (rbVideo.Size.Width + rbAudio.Size.Width + rbCustom.Size.Width)) / 2,
                 rbVideo.Location.Y
+                );
+            rbAudio.Location = new System.Drawing.Point(
+                (rbVideo.Location.X + rbVideo.Size.Width) + 2,
+                rbAudio.Location.Y
                 );
             rbCustom.Location = new System.Drawing.Point(
                 ((rbAudio.Location.X + rbAudio.Size.Width) + 2),
                 rbCustom.Location.Y
                 );
 
-            rbConvertAudio.Location = new System.Drawing.Point(
-                (tabConvert.Size.Width - rbConvertAudio.Size.Width) / 2,
-                rbConvertAudio.Location.Y
-                );
             rbConvertVideo.Location = new System.Drawing.Point(
-                (rbConvertAudio.Location.X - rbConvertVideo.Width) - 2,
-                rbConvertAudio.Location.Y
+                (tabConvert.Size.Width - (rbConvertVideo.Size.Width + rbConvertAudio.Size.Width + rbConvertCustom.Size.Width)) / 2,
+                rbConvertVideo.Location.Y
+                );
+            rbConvertAudio.Location = new System.Drawing.Point(
+                (rbConvertVideo.Location.X + rbConvertVideo.Width) - 2,
+                rbConvertVideo.Location.Y
                 );
             rbConvertCustom.Location = new System.Drawing.Point(
                 (rbConvertAudio.Location.X + rbConvertAudio.Size.Width) + 2,
